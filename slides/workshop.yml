@@ -1,0 +1,20 @@
+title: |
+  Platform Engineering with Backstage
+
+gitrepo: github.com/stagecentral/bacsktage-workshop
+
+slides: https://devopstrain.pro/backstage
+
+chapters:
+
+- workshop/title.md
+- workshop/intro.md
+- workshop/toc.md
+- - workshop/overview.md
+- - workshop/runapp.md
+- - workshop/catalog.md
+- - workshop/docs.md
+- - workshop/scaffolder.md
+- - workshop/plugins.md
+  - workshop/kubernetes.md
+- workshop/summary.md
