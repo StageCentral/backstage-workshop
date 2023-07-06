@@ -78,30 +78,23 @@ Once you see: `[0] webpack compiled successfully`
 Browse to <*YOUR-MACHINE-IP*>:3000
 
 ---
-## An Experiment
+## Exploring Backstage UI
  
-An *Experiment* is a limited run of one or more ReplicaSets for the purposes of analysis. Experiments typically run for a pre-determined duration, but can also run indefinitely until stopped. 
-
-Experiments may reference an AnalysisTemplate to run during or after the experiment. 
-
-The canonical use case for an Experiment is to start a baseline and canary deployment in parallel, and compare the metrics produced by the baseline and canary pods for an equal comparison.
-
+Backstage comes with the following UI components out of the box:
+- The Catalog
+- The API Explorer
+- Tech Docs
+- Scaffolder
+![image alt ><](images/menu.png)
 ---
 
-## Explore Argo Rollouts 
+## The Catalog Page
 
-Let's see what Argo Rollouts components we have in our cluster
-.exercise[
-  ```bash
-  kubectl get all -n argo-rollouts
-  ```
+The Catalog provides acces to all the catalog entities.
+
+.lab[
+- Click on **example-website** to browse the component information
+- Note the entity relationships graph:
 ]
 
-And the custom resources used to configure the rollouts.
-
-.exercise[
-  ```bash
-  kubectl get crds | grep argo
-  ```
-]
-
+  ![image alt ><](images/relationships.png)
