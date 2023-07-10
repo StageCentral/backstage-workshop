@@ -1,9 +1,8 @@
-- date: 2019-06-11
-  city: Berlin,
-  country: de
-  event: DevOpsCon
-  title: Deploy Microservices like a Ninja with Istio Service Mesh
-
-- title: Deploy Microservices like a Ninja with Istio Service Mesh
-  slides: istio.yml.html
+- date: 2023-09-20
+  city: Bern,
+  country: sc
+  event: CloudNativeDay
+  title: Platform Engineering with Backstage
+- title: Platform Engineering with Backstage
+  slides: workshop.yml.html
 

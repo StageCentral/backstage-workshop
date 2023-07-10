@@ -23,9 +23,20 @@ echo \
   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+#Install gh tool
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 
+sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 
 sudo apt-get update
+sudo apt-get install gh -y
+
 VERSION_STRING=5:24.0.0-1~ubuntu.22.04~jammy
 sudo apt-get install -y docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-buildx-plugin docker-compose-plugin
+
+# add docker permissions
+
+sudo usermod -G docker $USER
+newgrp docker 
 
 #install node
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\

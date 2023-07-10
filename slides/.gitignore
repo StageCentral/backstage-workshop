@@ -1,2 +1,4 @@
 *.html
 !workshop.html
+*.zip
+.DS_Store

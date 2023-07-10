@@ -41,6 +41,9 @@ code.remark-code {
 .lab ul li code.remark-code.hljs.bash {
   padding: 0;
 }
+.lab code {
+  background-color:lightcyan;
+}
 
 /* For print! Borrowed from https://github.com/gnab/remark/issues/50 */
 @page {
