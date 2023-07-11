@@ -34,7 +34,7 @@ The values in `app-config.yaml` can be:
 Let's use both options:
 .lab[
 ```bash
-export PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+export PUBLIC_DNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
 ```
 ]
 ---
@@ -45,16 +45,16 @@ Now open `app-config.yaml` and edit the following lines:
 ```yaml
 app:
   title: StageCentral Workshop
-  baseUrl: http://0.0.0.0:3000
+  baseUrl: http://${PUBLIC_DNS}:3000
 ...
 backend:
-  baseUrl: http://${PUBLIC_IP}:7007
+  baseUrl: http://${PUBLIC_DNS}:7007
   listen:
     port: 7007
     host: 0.0.0.0
 ...
   cors:
-    origin: http://${PUBLIC_IP}:3000
+    origin: http://${PUBLIC_DNS}:3000
 ```
 ]
 
@@ -98,3 +98,168 @@ The Catalog provides acces to all the catalog entities.
 ]
 
   ![image alt ><](images/relationships.png)
+
+---
+
+# Adding Authentication
+
+- Initially Backstage creates an un-authenticated IDP
+
+- Everybody can log in
+
+- Usually that's not what we want
+
+- We want to only allow authenticated access
+
+- Let's see how to do it.
+
+---
+
+## Authentication Providers
+
+The authentication system in Backstage serves two distinct purposes: 
+- sign-in and identification of users
+- delegating access to third-party resources.
+
+It is possible to configure Backstage to have any number of **authentication providers**, but only one of these will typically be used for sign-in, with the rest being used to provide access to external resources.
+
+Backstage comes with many [common authentication providers](https://backstage.io/docs/auth/#built-in-authentication-providers) in the core library.
+
+---
+
+## Sign-in Configuration
+
+Sign-in is configured by providing a custom `SignInPage` app component. It gets rendered before any other routes in the app and is responsible for providing the identity of the current user. 
+
+The SignInPage can render any number of pages and components, or just blank space with logic running in the background. In the end however it must provide a valid Backstage user identity through the `onSignInSuccess` callback prop, at which point the rest of the app is rendered.
+
+We can use the `SignInPage` component that is provided by `@backstage/core-components`, which takes either a provider or providers (array) prop of `SignInProviderConfig` definitions.
+
+---
+
+## Configuring Authentication with Github
+
+Each built-in provider has a configuration block under the auth section of `app-config.yaml`. 
+
+.lab[
+In `app-config.yaml` under `auth` add : 
+```yaml
+auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+```
+]
+
+---
+
+## Where Github Credentials Come From
+
+To add GitHub authentication, you must create either a *GitHub App*, or an *OAuth App* from the GitHub developer settings. 
+
+The *Homepage URL* should point to Backstage's frontend, while the *Authorization callback URL* will point to the auth backend.
+
+Settings for our lab:
+
+Application name: StageCentralWorkshop
+
+Homepage URL: http://${YOUR_LAB_PUBLIC_DNS}:3000
+
+Authorization callback URL: http://${YOUR_LAB_PUBLIC_DNS}:7007/api/auth/github/handler/frame
+
+---
+
+## Create an OAuthApp in Github
+
+In the upper-right corner of any Github page, click your profile photo, then click **Settings**.
+
+In the left sidebar, click  Developer settings.
+
+In the left sidebar, click OAuth apps.
+
+Click New OAuth App.
+
+*Note: If you haven't created an app before, this button will say, Register a new application.*
+
+In "Application name", type "StageCentralWorkshop"
+
+In "Homepage URL", type "http://${YOUR_LAB_PUBLIC_DNS}:3000"
+
+In "Authorization callback URL", type "http://${YOUR_LAB_PUBLIC_DNS}:7007/api/auth/github/handler/frame"
+
+Click Register application. 
+
+---
+
+## Generate a Client Secret for Your App
+
+- Browse to your OAuth app page on Github
+
+- Note the "Client ID" token
+
+- Under it -  click on "Generate a new client secret"
+
+- Copy the new client secret
+
+---
+
+## Add Github Credentials to Backstage
+
+.lab[
+```bash
+export AUTH_GITHUB_CLIENT_ID=your_app_client_id
+export AUTH_GITHUB_CLIENT_SECRET=your_app_clent_secret
+```
+]
+
+Configuration is done!!!
+
+Now we need to add the `SignInPage` to our app
+
+---
+## In `~/backstage/packages/app/src/App.tsx`:
+
+.lab[
+```typescript
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInPage } from '@backstage/core-components';
+const app = createApp({
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'github-auth-provider',
+          title: 'GitHub',
+          message: 'Sign in using GitHub',
+          apiRef: githubAuthApiRef,
+        }}
+      />
+    ),
+  },
+```
+]
+
+---
+
+## Running Backstage with Github Auth
+
+Restart your Backstage app:
+
+Hit Control-C twice to stop the fronted and the backend.
+
+.lab[
+```bash
+yarn dev
+```
+]
+
+--
+
+
+Now go back to http://YOUR_PUBLIC_DNS:3000 and log in with Github app credentials.
+

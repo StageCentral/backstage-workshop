@@ -33,13 +33,13 @@ sudo apt-get install gh -y
 VERSION_STRING=5:24.0.0-1~ubuntu.22.04~jammy
 sudo apt-get install -y docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-buildx-plugin docker-compose-plugin
 
-# add docker permissions
-
-sudo usermod -G docker $USER
-newgrp docker 
-
 #install node
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 
 sudo npm install --global yarn
+
+# add docker permissions
+
+sudo usermod -G docker $USER
+newgrp docker 
