@@ -84,7 +84,13 @@ In order to retrieve data from an SCM provider service we need to authenticate w
 
 Let's define this for Github.
 
+- Wait! Haven't we already integrated with Github for authentication?  🤔  
+
+We did! But that was to authenticate sign-in. Now we need our Backstage app to retrieve data from Github. Even when no users are signed in. 
+
 We'll need to have a Personal Access Token with (at least) read permission for all repos we own.
+
+Note: if all our repos are public - there's no need to define a token. Anonymous access will be used by default.
 
 ---
 
@@ -130,7 +136,16 @@ So basically all we need now is to restart Backstage!
 
 ---
 
-### Adding a New Component (Service)
+## Using Github Apps for Catalog Integration
+
+As an alternative to PATs - Backstage can be configured to use GitHub Apps for backend authentication. This comes with advantages such as higher rate limits and that Backstage can act as an application instead of a user or bot account.
+
+It also provides a much clearer and better authorization model as a opposed to the OAuth apps and their respective scopes.
+
+See more [here](https://backstage.io/docs/integrations/github/github-apps)
+---
+
+## Adding a New Component (Service)
 
 In order to add an entity we need to connect a git repo with a metadata *YAML* file in it.
 The file is usually called `catalog-info.yaml`
@@ -209,6 +224,43 @@ Right now let's use the existing "Example Node.js Template" to add a new node.js
 
 ---
 
+## Persisting Our Changes
+
+Components created from templates are added directly to the database.
+
+Out of the box Backstage is configured to use sqlite as its database engine. This means our changes to catalog won't be persisted between app reruns.
+
+Let's replace sqlite with a PostgreSQL container for ( a bit more ) consistency.
+
+Note: in production setup you'll want to use a highly-available, persistent DB solution, of course.
+
+---
+
+## Let's Run PostrgeSQL
+
+.lab[
+```bash
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=stagecentral postgres
+```
+
+Add this in `app-config.yaml`:
+```yaml
+database:
+    client: pg
+    connection:
+      host: localhost
+      port: 5432
+      user: postgres
+      password: postgres
+```
+And - rerun Backstage:
+```bash
+yarn dev
+```
+]
+
+---
+
 ## Create a new Component from Template
 
 - In Backstage UI go to "Create"
@@ -243,9 +295,10 @@ Let's add some metadata to the repo we created from template.
 .lab[
 - Go to the **mynodesvc** repo you created earlier
 - In `catalog-info.yaml` add the following:
+
 ```yaml
 spec:
-  system: backstage-workshop
+    system: backstage-workshop
 ```
 - Commit your changes
 - Back in Backstage UI - go to **mynodesvc** and click on ⟳
