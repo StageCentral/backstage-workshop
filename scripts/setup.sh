@@ -24,7 +24,10 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 #Install k3d 
-curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.0.0 bash
+curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.5.1 bash
+# Install kubectl 
+curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 #Install gh tool
 curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 

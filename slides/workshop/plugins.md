@@ -153,8 +153,9 @@ Browse to your Backstage UI and check the "Kubernetes" tab on one of your existi
 The tab should show: 
 
   *Missing Annotation*
-  
+
   *The annotation backstage.io/kubernetes-id is missing. You need to add the annotation to your component if you want to enable this tool.*
+
 ---
 
 ## Configuring Kubernetes integration
@@ -165,5 +166,87 @@ Configuring the Backstage Kubernetes integration involves two steps:
 - Enabling the backend to collect objects from your Kubernetes cluster(s).
 - Surfacing your Kubernetes objects in catalog entities
 
+---
 
+## Getting a Kubernetes Cluster
 
+In our labs we already have `k3d` preinstalled.
+
+If you don't have k3d - install it with:
+
+`curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.5.1 bash`
+
+Create a cluster:
+
+.lab[
+```bash
+k3d cluster create mycluster
+#verify your cluster
+kubectl cluster-info
+```
+]
+
+---
+
+## Configure Kunernetes Access
+
+Backstage Kubernetes plugin supports various ways of locating K8S clusters and a number of authentication providers.
+
+We will be using the `clusterLocatorMethod.type='config'` and `cluster.LocatorMethod.clusters.authProvider='serviceAccount'`
+
+So we need to create a service account and assign a role to it first.
+
+---
+
+## Creating a Service Account
+
+The Kubernetes plugin requires read-only cluster-wide access. We will create a Kubernetes `serviceAccount` and bind it to `clusterRole` named `view`.
+
+.lab[
+```bash
+  kubectl create sa -n kube-system backstage
+  kubectl create clusterrolebinding backstage \
+    --clusterrole=view \
+    --serviceaccount=kube-system:backstage
+  export K8S_CONFIG_SA_TOKEN=$(kubectl create token -n kube-system backstage)
+  export K8S_CONFIG_URL=$(kubectl config view \ 
+    -ojsonpath="{ .clusters[0].cluster.server }")
+  export K8S_CONFIG_CA_DATA=$(kubectl config view --raw \ 
+    -ojsonpath="{ .clusters[0].cluster.certificate-authority-data }")
+```
+]
+
+---
+
+## Add cluster information to your app-config,yaml
+
+.lab[
+In your app-config.yaml add:
+```yaml
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: ${K8S_CONFIG_URL} #cluster API url
+          name: mycluster
+          authProvider: 'serviceAccount'
+          serviceAccountToken: ${K8S_CONFIG_SA_TOKEN} #the token
+          caData: ${K8S_CONFIG_CA_DATA} #CAData for the cluster
+```
+]
+
+---
+
+## Let's check if it's working
+
+- Browse to your `backster` service in Backstage
+
+- Go to 'Kubernentes' tab
+
+- You should now see the cluster but no Kubernetes objects found.
+
+- We now need to annotate our entity and label our objects.
+
+---
