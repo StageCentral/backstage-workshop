@@ -5,8 +5,5 @@
 ./images/interstitials/5.jpg
 ./images/interstitials/6.jpg
 ./images/interstitials/7.jpg
-./images/interstitials/8.jpg
-./images/interstitials/9.jpg
-./images/interstitials/10.jpg
 
 

@@ -74,7 +74,7 @@ The YAML files can be called anything but the conventional name is **catalog-inf
 
     - Creating a new component in Backstage from a template
 
-    - Integrating with an external source via a **custom entity provider**, or a **custom processor** (More ont that later...)
+    - Integrating with an external source via a **custom entity provider**, or a **custom processor** (More on that later...)
 
 ---
 
@@ -251,7 +251,7 @@ database:
       host: localhost
       port: 5432
       user: postgres
-      password: postgres
+      password: stagecentral
 ```
 And - rerun Backstage:
 ```bash

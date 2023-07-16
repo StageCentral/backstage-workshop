@@ -22,7 +22,7 @@ When running in development on your machine - the default configuration is suffi
 
 But in this workshop we wil be running Backstage dev version on a VM and accessing it remotely through our web browser.
 
-This is also a great opprotunity to play with configuration
+This is also a great opprotunity to start playing with configuration.
 
 ---
 ## Configuring Backstage for Our Workshop

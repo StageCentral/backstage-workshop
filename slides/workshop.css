@@ -45,6 +45,9 @@ code.remark-code {
   background-color:lightcyan;
 }
 
+.lab a {
+  color:blueviolet;
+}
 /* For print! Borrowed from https://github.com/gnab/remark/issues/50 */
 @page {
   size: 1210px 681px;

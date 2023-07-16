@@ -2,15 +2,18 @@
 
 Platform engineering is a new discipline that emerged in response to the growing complexity of modern cloud-native architectures. It entails the practice of building and maintaining an integrated product, called an “Internal Developer/Delivery Platform,” which acts as a flexible and well-maintained abstraction layer between the engineers and the underlying technologies of their applications.
 
-The main goal of the Internal Delivery Platform is to enable engineers to be more productive by eliminating waste, reducing cognitive load and putting the needed data at their fingertips.
+The main goal of the Internal Delivery Platform is to enable engineers to be more productive by:
+- eliminating waste
+- reducing cognitive load
+- putting the needed data at their fingertips.
 
 ---
 
 ## What's an IDP
 
-An Internal Delivery Platform is the backbone of an organizations delivery process - abstracting away the complexities and providing the tools to get stuff done in the most productive and cost-effective way.
+- An Internal Delivery *Platform* is the backbone of an organizations delivery process - abstracting away the complexities and providing the tools to get stuff done in the most productive and cost-effective way.
 
-An Internal Delivery Portal (Backstage) is the dashboard of our internal platform - providing and visualizing all the necessary data and enabling the shortest (golden) paths to getting stuff done. 
+- An Internal Delivery *Portal* (Backstage) is the dashboard of our internal platform - providing and visualizing all the necessary data and enabling the shortest (golden) paths to getting stuff done. 
 
 ---
 
