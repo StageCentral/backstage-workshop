@@ -305,3 +305,13 @@ spec:
 - Click on "Home" - your changes should be now registered
 
 ]
+
+---
+
+## Unregistering an Entity
+
+- Browse to an entity page
+
+- Click on the three dots in the top right corner
+
+- Choose "Unregister Entity"

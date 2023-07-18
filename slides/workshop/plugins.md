@@ -250,3 +250,64 @@ kubernetes:
 - We now need to annotate our entity and label our objects.
 
 ---
+
+## Finding K8S Resources Related to Our Entity
+
+There are two ways to surface your Kubernetes components as part of an entity. 
+
+- Using the label selector annotation
+
+- Using the standard backstage annotation
+
+---
+
+## Using the Standard Annotation
+
+In order for Backstage to detect that an entity has Kubernetes components, the following annotation should be added to the entity's catalog-info.yaml:
+
+```yaml
+annotations:
+  'backstage.io/kubernetes-id': backster
+```
+
+---
+
+## Adding the Standard Annotation
+
+.lab[
+```bash
+#Assuming we already have the backster repo code on our VM
+cd ~/backster
+#add the annotation from the previous slide to catalog-info.yaml
+git commit -a -m "Add k8s annotation"
+git push origin main
+```
+]
+
+---
+
+## Labelling K8S objects
+
+We now need to:
+
+- Create some pods
+
+- Add the annotation to see them in Backstage
+
+.lab[
+```bash
+kubectl create deployment backster --image=otomato/httpenv --replicas=3
+kubectl label pods,deployments --all backstage.io/kubernetes-id=backster
+```
+]
+
+---
+
+## Check if this worked
+
+- Go back to Backstage UI
+
+- Browse to backster->Kubernetes and see the related pods
+
+---
+
