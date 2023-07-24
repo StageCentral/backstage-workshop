@@ -16,5 +16,4 @@ chapters:
 - - workshop/docs.md
 - - workshop/scaffolder.md
 - - workshop/plugins.md
-  - workshop/kubernetes.md
 - workshop/summary.md

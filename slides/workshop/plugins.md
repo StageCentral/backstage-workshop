@@ -188,7 +188,7 @@ kubectl cluster-info
 
 ---
 
-## Configure Kunernetes Access
+## Configure Kubernetes Access
 
 Backstage Kubernetes plugin supports various ways of locating K8S clusters and a number of authentication providers.
 
@@ -311,3 +311,39 @@ kubectl label pods,deployments --all backstage.io/kubernetes-id=backster
 
 ---
 
+## Using Label Selector for K8S Discovery
+
+- It's possible to use existing Kubernetes labels for finding the objects related to the entiy
+
+- The annotation on the entity should look like:
+```yaml
+annotations:
+  'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
+```
+
+- This is a better approach if you already have well-known labels on your objects
+
+---
+
+## Finding K8s Resources with a Selector
+
+.lab[
+
+Let's expose our deployment:
+```bash
+kubectl expose deployment backster --port=8000
+#the deployment already has the 'app=backster' label
+#and now the service has it too
+```
+
+And change the annotation in our `backster/catalog-info.yaml`:
+
+```yaml
+annotations:
+  backstage.io/kubernetes-label-selector: 'app=backster'
+```
+]
+
+Reload the Kubernetes tab of your 'backster' component.
+
+---

@@ -25,7 +25,38 @@ Software templates can define publish actions, such as `publish:github` - to cre
 ```yaml
 scaffolder:
   defaultAuthor:
-    name: M.C. Hammer # Defaults to `Scaffolder`
-    email: hammer@donthurtem.com # Defaults to `scaffolder@backstage.io`
-  defaultCommitMessage: "U can't touch this" # Defaults to 'Initial commit'
+    name: Rick Astley # Defaults to `Scaffolder`
+    email: ricka@noletdown.com # Defaults to `scaffolder@backstage.io`
+  defaultCommitMessage: "Never Gonna Give U Up" # Defaults to 'Initial commit'
 ```
+---
+
+## Adding Our Own Templates
+
+Software templates are stored in the Software Catalog under the *Template* kind.
+
+What you need for a template are:
+
+- A `template.yaml` file
+
+- Some files/folders to template from. (Optional)
+
+---
+
+## The Structure of a Template
+
+Actually *Template* is a bit of a misnomer. In reality a `template.yaml` file defines a parameterized workflow that can optionally do some templating.
+
+Basic parts of a `Template` entity:
+
+- metadata - common to all catalog entities
+
+- **spec.type** [required] - the type of entity created by the template, e.g. website. This is used for filtering templates.
+
+- **spec.parameters** [required] - fields that are rendered in the frontend input form
+
+- **spec.steps** [required] - The steps that are executed by the scaffolder in order to create a component from a template
+
+- **spec.output** - displayed to the user after a successful execution
+
+Here's the example Node.js [template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/examples/template/template.yaml)
