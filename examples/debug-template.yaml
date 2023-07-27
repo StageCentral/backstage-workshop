@@ -1,0 +1,27 @@
+kind: Template
+metadata:
+  name: debug-template
+  title: Debug Template
+spec:
+  owner: user:antweiss
+  type: template
+  parameters:
+    - title:  your properties
+      required:
+        - name
+        - type
+      properties:
+        name:
+          title: Name
+          type: string
+        type:
+          title: Type
+          type: string
+  steps:
+    - id: Log
+      name: Log
+      action: debug:log
+      input:
+        message: Created resource ${{ parameters.name }} with type ${{ parameters.type }}
+        listWorkspace: true
+  

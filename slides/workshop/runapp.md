@@ -263,3 +263,6 @@ yarn dev
 
 Now go back to http://YOUR_PUBLIC_DNS:3000 and log in with Github app credentials.
 
+---
+
+## TODO: Add a Github Sign-in Resolver
