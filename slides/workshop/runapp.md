@@ -75,7 +75,7 @@ This will run both the frontend and the backend applications.
 
 Once you see: `[0] webpack compiled successfully`
 
-Browse to <*YOUR-MACHINE-IP*>:3000
+Browse to <*YOUR-MACHINE-PUBLIC-DNS*>:3000
 
 ---
 ## Exploring Backstage UI
@@ -265,4 +265,80 @@ Now go back to http://YOUR_PUBLIC_DNS:3000 and log in with Github app credential
 
 ---
 
-## TODO: Add a Github Sign-in Resolver
+## Adding an actual sign-in resolver
+
+- Great, we are now authenticated. 
+
+- Let's check this by going to ⚙️ Settings (Bottom left corner)
+
+- You should see your github user profile
+
+- But 'Backstage Identity' says:
+ 
+  -  "User Entity: user:default/guest"
+  -  "Ownership Entities: user:default/guest"
+
+- Users are Backstage catalog entities.
+
+- In order to connect your auth provider users to Backstage user entities we need a **sign-in resolver**
+
+---
+
+## A sign-in resolver for Github
+
+- Let's add a sign-in resolver for Github
+
+- In `packages/backend/src/plugins/auth.ts` - uncomment the commented line:
+
+```typescript
+github: providers.github.create({
+        signIn: {
+          resolver(_, ctx) {
+            const userRef = 'user:default/guest'; // Must be a full entity reference
+            return ctx.issueToken({
+              claims: {
+                sub: userRef, // The user's own identity
+                ent: [userRef], // A list of identities that the user claims ownership through
+              },
+            });
+          },
+          // resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
+        },
+```
+
+---
+
+## Adding a Backstage user entity
+
+- Let's rerun our app with `yarn dev`
+
+- We're now getting "User not found"!
+
+- Makes sense - our catalog only has the guest user.
+
+- Let's add your github user to the catalog.
+
+---
+
+## Adding a Backstage user entity
+
+- Open `~/backstage/examples/org.yaml`
+
+- Add the following yaml snippet:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: <your-github-username>
+spec:
+  memberOf: [guests]
+```
+
+- Restart the app
+
+- Now in "Backstage Identity" you should see: "User Entity: user:default/your-github-username"
+
+- Now you can be the owner of catalog entities.
+
+---
