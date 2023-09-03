@@ -341,4 +341,4 @@ spec:
 
 - Now you can be the owner of catalog entities.
 
----
+

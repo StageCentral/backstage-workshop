@@ -194,7 +194,7 @@ Like this:
 
 - Scaffolder comes with several built-in actions for:
     - fetching content (`fetch:plain`, `fetch:template`)
-    - registering entities the catalog (`catalog:register`)
+    - registering entities in the catalog (`catalog:register`)
     - creating and publishing a git repository (`publish:github`, `publish:gitlab`)
     - and more...
 - If you want to extend the functionality of the Scaffolder, you can do so by writing *custom actions* which can be used alongside the built-in actions.
@@ -202,6 +202,19 @@ Like this:
 
 - All available actions for your IDP can be seen at http://your-backstage/create/actions
 
+---
+
+## Inspect Available Scaffolder Actions
+
+- All available actions for your IDP can be seen at http://your-backstage/create/actions
+
+.lab[
+
+  - Go to http://${YOUR_LAB_DNS}:3000/create/actions
+
+  - Explore the actions you currently have
+
+]
 
 ---
 
@@ -218,15 +231,16 @@ output:
       url: ${{ steps['publish'].output.remoteUrl }} #link to the repo
     - title: Open in catalog
       icon: catalog
-      entityRef: ${{ steps['register'].output.entityRef }
+      entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
-- showing Markdown text blobs:
+- showing Markdown text blobs: (will be available in scaffolder/next)
+
 ```yaml
 output:
   text:
     - title: Some text
-      content: __Entity URL:__ `${{ steps['publish'].output.remoteUrl }}`
+      content: __Entity URL:__ \`${{ steps['publish'].output.remoteUrl }}`
 ```
       
 ---
@@ -273,7 +287,35 @@ Let's use `debug:log` in an exercise!
 ```
 ---
 
-## Writing a real template
+## Templating Files
+
+The actual *templating* occurs in the `fetch:template` action. It looks at the files its `input.url` and replaces the placeholders (by default in files with `.njk` extension, but that's modifiable) using the powerful [Nunjucks library](https://mozilla.github.io/nunjucks/) based on values from its `input.values` as shown in the following example:
+
+---
+
+## Templating Example
+```yaml
+  - id: fetch
+      name: Fetch 
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+         name: ${{ parameters.name }}
+         enabledDB: ${{ parameters.enabledDB }}
+```
+In ./content/somefile.njk
+```javascript
+{% if enabledDB %}
+DB is enabled for ${{ values.name }}
+{% else }
+DB is disabled for ${{ values.name }}
+{% endif %}
+```
+
+---
+
+# Writing a template - Exercise
 
  - Let's write a real software template
 
@@ -284,22 +326,67 @@ Let's use `debug:log` in an exercise!
     - register the resuting new service in the catalog
 ---
 
-## Start with a template
+## Create a template repo
 
-Use express-template
+It's usually a good idea to have one templates repo for a number of templates.
+Let's create one.
 
+.lab[
+```bash
+cd ~
+gh repo create *myuser*/bs-templates -c \ 
+   --public
+cd bs-template
+```
+]
 
+---
+
+## Create Our Template Code
+
+Let's generate a basic Expressjs app and add some templating to it:
+
+.lab[
+```bash
+npx express-generator express
+ # reply 'yes' at the prompt
+ # and move index.js to index.js.njk - for templating
+mv express/routes/index.js express/routes/index.js.njk
+```
+]
+
+Now open express/routes/index.js.njk and replace:
+```javascript
+res.render('index', { title: 'Express' });
+```
+with
+```javascript
+res.render('index', { title: '${{ values.name }}' }} });
+```
+
+---
+
+## Create the Template Definition
+
+Let's now create a file named `templates.yaml` with all our template definitions:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: example-nodejs-template
-  title: Example Node.js Template
-  description: An example template for the scaffolder that creates a simple Node.js service
+  name: expressjs-template
+  title: Express.js Template
+  description: Creates a an Expressjs app for the StageCentral Workshop
+```
+Continues on the next slides...
+---
+
+## Define Template Parameters
+
+```yaml
 spec:
   owner: user:guest
-  type: service
-
-  # These parameters are used to generate the input form in the frontend, and are
-  # used to gather input data for the execution of the template.
+  type: app
   parameters:
     - title: Fill in some steps
       required:
@@ -312,6 +399,10 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
+```
+---
+## Define Template Parameters
+```yaml
     - title: Choose a location
       required:
         - repoUrl
@@ -323,15 +414,87 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
+```
+---
+## Define workflow steps - fetch:template
+```yaml
   steps:
-    - id: fetch-base
-      name: Fetch Base
-      action: fetch:plain
+    - id: fetch-template
+      name: Fetch Template Repo
+      action: fetch:template
       input:
-        url: ./content
-        target-path: ${{ parameters.name }}
-    - id: wait
-      name: Wait
-      action: debug:wait
+        url: ./express
+        #this defines that only .njk files will be templated
+        templateFileExtension: true
+        values:
+          name: ${{ parameters.name }}
+```
+---
+
+## Define workflow steps - catalog:write
+```yaml
+    - id: write-catalog-info
+      name: Write Catalog Info
+      action: catalog-write
       input:
-        minutes: 2
+        entity: 
+          apiVersion: backstage.io/v1alpha1
+          kind: Component
+          metadata:
+            name: ${{ parameters.name }}
+            namespace: default
+            description: The ${{ parameters.name }} service
+          spec:
+            type: app
+            lifecycle: production
+            owner: group:guests
+``` 
+---
+
+## Define workflow steps - publish and register
+
+```yaml
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+```
+---
+## Define template outputs
+
+```yaml
+output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
+```
+---
+## Exercise: Create Your Own Template for a FastApi Service
+
+- You can start with [our fastApi template] (https://github.com/StageCentral/python-fastapi-template)
+
+- Store the template code in 'fastAPI' folder in your templates repo
+
+- Add Nunjucks templating for main.py 
+
+- Add a template definition to 'templates.yaml'
+
+- Refresh the location
+
+- Run the template to verify
+
+
+

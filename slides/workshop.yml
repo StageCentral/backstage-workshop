@@ -15,5 +15,8 @@ chapters:
 - - workshop/catalog.md
 - - workshop/docs.md
 - - workshop/scaffolder.md
+  - - workshop/templates.md
 - - workshop/plugins.md
-- workshop/summary.md
+  - - workshop/k8s_plugin.md
+- - workshop/production.md
+  - - workshop/summary.md

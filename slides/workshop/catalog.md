@@ -1,6 +1,8 @@
 # Populating the Software Catalog
 
-The Backstage Software Catalog is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of metadata YAML files stored together with the code, which are then harvested and visualized in Backstage.
+The Backstage Software Catalog is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). 
+
+The catalog is built around the concept of metadata YAML files stored together with the code, which are then harvested and visualized in Backstage.
 
 ---
 
@@ -9,7 +11,7 @@ The Backstage Software Catalog is a centralized system that keeps track of owner
 Our catalog already has:
 - 1 component (example-website)
 - 1 api
-- 1 user
+- 2 users (we added one in the previous chapter)
 - 1 group
 - 1 template
 - 1 system
@@ -171,7 +173,7 @@ spec:
 ```bash
 cd ~
 gh repo create *myuser*/backster -c \ 
-   -p stagecentral/python-fastapi-service-template \
+   -p stagecentral/python-fastapi-template \
    --public
 cd backster
 cat << EOF > catalog-info.yaml
