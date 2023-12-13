@@ -2,7 +2,7 @@
 
 
 # Cancel needrestart popups
-sed -i "/#\$nrconf{restart} = 'i';/s/.*/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+sudo sed -i "/#\$nrconf{restart} = 'i';/s/.*/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
 DEBIAN_FRONTEND=noninteractive
 
 # Initial apt update
