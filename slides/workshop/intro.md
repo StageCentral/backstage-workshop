@@ -33,7 +33,7 @@
   cd backstage-workshop
   ./scripts/setup.sh
   cd ~
-  npx @backstage/create-app@latest --skip-install
+  npx @backstage/create-app@0.5.6 --skip-install
   # accept all defaults
   cd backstage
   #install the dependencies
