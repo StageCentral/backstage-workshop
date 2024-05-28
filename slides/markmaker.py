@@ -184,7 +184,8 @@ try:
         repo = os.environ["REPOSITORY_URL"]
     else:
         repo = subprocess.check_output(["git", "config", "remote.origin.url"]).decode("ascii")
-    repo = repo.strip().replace("git@github.com:", "https://github.com/")
+        repo = repo.strip().replace("git@github.com:", "https://github.com/")
+        repo = os.path.splitext(repo)[0]
     if "BRANCH" in os.environ:
         branch = os.environ["BRANCH"]
     else:

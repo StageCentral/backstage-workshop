@@ -97,7 +97,7 @@ In `docs/index.md`  put the following content:
 ```markdown
 &#8203;# A great little service
 
-This service was created at StageCentral Backstage workshop
+This service was created at PerfectScale Backstage workshop
 ```
 Commit and push your changes.
 

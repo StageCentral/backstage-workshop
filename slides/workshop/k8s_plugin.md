@@ -79,50 +79,16 @@ yarn add --cwd packages/backend @backstage/plugin-kubernetes-backend
 ---
 ## Adding Kubernetes Backend plugin
 
-And add a whole new file:  `packages/backend/src/plugins/kubernetes.ts`
-
-```typescript
-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-import { CatalogClient } from '@backstage/catalog-client';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
-  const { router } = await KubernetesBuilder.createBuilder({
-    logger: env.logger,
-    config: env.config,
-    catalogApi,
-    permissions: env.permissions,
-  }).build();
-  return router;
-}
+In `packages/backend/src/index.ts` :
 ```
----
+const backend = createBackend();
 
-## Adding Kubernetes Backend plugin
+// Other plugins...
+// Add this line:
+backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 
-Finally we need to register the plugin with the backend.
-
-Import the plugin to `packages/backend/src/index.ts`. There are three lines of code you'll need to add, and they should be added near similar code in your existing Backstage backend.
-
-.lab[
-```typescript
-// ..
-import kubernetes from './plugins/kubernetes';
-
-async function main() {
-  // ...
-  const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
-  // ...
-  apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+backend.start();
 ```
-]
-
-That's it! The Kubernetes frontend and backend have now been added to your Backstage app.
-
 ---
 
 ## Checking if it works

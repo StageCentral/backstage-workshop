@@ -34,7 +34,21 @@ The values in `app-config.yaml` can be:
 Let's use both options:
 .lab[
 ```bash
-export PUBLIC_DNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
+TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
+export PUBLIC_DNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname -H "X-aws-ec2-metadata-token: $TOKEN")
+```
+]
+
+---
+
+## Preserving our Environment
+
+In order not to have to set our env vars each time we switch terminal - let's preserve them to an env file which we can then source from.
+
+.lab[
+```bash 
+echo export PUBLIC_DNS=${PUBLIC_DNS} >> env.sh
+source env.sh
 ```
 ]
 ---
@@ -44,7 +58,7 @@ Now open `app-config.yaml` and edit the following lines:
 .lab[
 ```yaml
 app:
-  title: StageCentral Workshop
+  title: PerfectScale Workshop
   baseUrl: http://${PUBLIC_DNS}:3000
 ...
 backend:
@@ -151,6 +165,11 @@ auth:
       development:
         clientId: ${AUTH_GITHUB_CLIENT_ID}
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+         signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: usernameMatchingUserEntityName
 ```
 ]
 
@@ -164,7 +183,7 @@ The *Homepage URL* should point to Backstage's frontend, while the *Authorizatio
 
 Settings for our lab:
 
-Application name: StageCentralWorkshop
+Application name: PerfectScaleWorkshop
 
 Homepage URL: http://${YOUR_LAB_PUBLIC_DNS}:3000
 
@@ -184,7 +203,7 @@ Click New OAuth App.
 
 *Note: If you haven't created an app before, this button will say, Register a new application.*
 
-In "Application name", type "StageCentralWorkshop"
+In "Application name", type "PerfectScaleWorkshop"
 
 In "Homepage URL", type "http://${YOUR_LAB_PUBLIC_DNS}:3000"
 
@@ -210,8 +229,9 @@ Click Register application.
 
 .lab[
 ```bash
-export AUTH_GITHUB_CLIENT_ID=your_app_client_id
-export AUTH_GITHUB_CLIENT_SECRET=your_app_clent_secret
+echo export AUTH_GITHUB_CLIENT_ID=your_app_client_id >> env.sh
+echo export AUTH_GITHUB_CLIENT_SECRET=your_app_clent_secret >> env.sh
+source env.sh
 ```
 ]
 
@@ -225,8 +245,9 @@ Now we need to add the `SignInPage` to our app
 .lab[
 ```typescript
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
-import { SignInPage } from '@backstage/core-components';
+
 const app = createApp({
+  //after apis and bindRoutes
   components: {
     SignInPage: props => (
       <SignInPage
@@ -241,6 +262,19 @@ const app = createApp({
       />
     ),
   },
+```
+]
+
+---
+
+## In `~/backstage/packages/backend/src/index.ts`:
+
+.lab[
+```typescript
+// auth plugin
+backend.add(import('@backstage/plugin-auth-backend'));
+// add this line
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 ```
 ]
 
@@ -265,58 +299,13 @@ Now go back to http://YOUR_PUBLIC_DNS:3000 and log in with Github app credential
 
 ---
 
-## Adding an actual sign-in resolver
+## Resolving our User (First glimpse of the Catalog)
 
-- Great, we are now authenticated. 
+- Back at Backstage we are getting: <span style="color:red">"Failed to sign-in, unable to resolve user identity"</span>
 
-- Let's check this by going to ⚙️ Settings (Bottom left corner)
+- The resolver we configured in `app-config.yaml` tries to match our github username to a `User` entity in the catalog.
 
-- You should see your github user profile
-
-- But 'Backstage Identity' says:
- 
-  -  "User Entity: user:default/guest"
-  -  "Ownership Entities: user:default/guest"
-
-- Users are Backstage catalog entities.
-
-- In order to connect your auth provider users to Backstage user entities we need a **sign-in resolver**
-
----
-
-## A sign-in resolver for Github
-
-- Let's add a sign-in resolver for Github
-
-- In `packages/backend/src/plugins/auth.ts` - uncomment the commented line:
-
-```typescript
-github: providers.github.create({
-        signIn: {
-          resolver(_, ctx) {
-            const userRef = 'user:default/guest'; // Must be a full entity reference
-            return ctx.issueToken({
-              claims: {
-                sub: userRef, // The user's own identity
-                ent: [userRef], // A list of identities that the user claims ownership through
-              },
-            });
-          },
-          // resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
-        },
-```
-
----
-
-## Adding a Backstage user entity
-
-- Let's rerun our app with `yarn dev`
-
-- We're now getting "User not found"!
-
-- Makes sense - our catalog only has the guest user.
-
-- Let's add your github user to the catalog.
+- In order for this to get resolved we need to update the catalog
 
 ---
 
@@ -337,7 +326,7 @@ spec:
 
 - Restart the app
 
-- Now in "Backstage Identity" you should see: "User Entity: user:default/your-github-username"
+- Now in "Settings -> Backstage Identity" you should see: "User Entity: your-github-username"
 
 - Now you can be the owner of catalog entities.
 

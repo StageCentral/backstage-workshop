@@ -289,7 +289,7 @@ Let's use `debug:log` in an exercise!
 
 ## Templating Files
 
-The actual *templating* occurs in the `fetch:template` action. It looks at the files its `input.url` and replaces the placeholders (by default in files with `.njk` extension, but that's modifiable) using the powerful [Nunjucks library](https://mozilla.github.io/nunjucks/) based on values from its `input.values` as shown in the following example:
+The actual *templating* occurs in the `fetch:template` action. It looks at the files at its `input.url` and replaces the placeholders (by default in files with `.njk` extension, but that's modifiable) using the powerful [Nunjucks library](https://mozilla.github.io/nunjucks/) based on values from its `input.values` as shown in the following example:
 
 ---
 
@@ -376,7 +376,7 @@ kind: Template
 metadata:
   name: expressjs-template
   title: Express.js Template
-  description: Creates a an Expressjs app for the StageCentral Workshop
+  description: Creates a an Expressjs app for the PerfectScale Workshop
 ```
 Continues on the next slides...
 ---
@@ -435,7 +435,7 @@ spec:
 ```yaml
     - id: write-catalog-info
       name: Write Catalog Info
-      action: catalog-write
+      action: catalog:write
       input:
         entity: 
           apiVersion: backstage.io/v1alpha1
@@ -484,7 +484,7 @@ output:
 ---
 ## Exercise: Create Your Own Template for a FastApi Service
 
-- You can start with [our fastApi template] (https://github.com/StageCentral/python-fastapi-template)
+- You can start with [our fastApi template] (https://github.com/PerfectScale/python-fastapi-template)
 
 - Store the template code in 'fastAPI' folder in your templates repo
 

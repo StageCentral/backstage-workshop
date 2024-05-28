@@ -88,7 +88,7 @@ Let's define this for Github.
 
 - Wait! Haven't we already integrated with Github for authentication?  🤔  
 
-We did! But that was to authenticate sign-in. Now we need our Backstage app to retrieve data from Github. Even when no users are signed in. 
+We did! But that was to authenticate sign-in. Now we need our Backstage app to retrieve data from Github. (Even when no users are signed in.) 
 
 We'll need to have a Personal Access Token with (at least) read permission for all repos we own.
 
@@ -168,6 +168,21 @@ spec:
 
 ---
 
+## Using the Github CLI
+
+We'll create the repo using the gihtub's `gh` cli utility.
+
+It's been preinstalled on your lab machines.
+
+First you'll need to log in to Github
+
+.lab[
+  gh auth login
+  # follow the instructions on the screen
+]
+
+---
+
 ## Preparing a Repository
 .lab[
 ```bash
@@ -195,6 +210,10 @@ EOF
 
 .lab[
 ```bash
+# If needed - configure your user details
+git config --global user.name "Ant Weiss"
+git config --global user.email "anton.weiss@perfectscale.io"
+# add, commit, push
 git add catalog-info.yaml
 git commit -m "Adding catalog info"
 git push origin main
@@ -216,9 +235,20 @@ git push origin main
 
 ---
 
+## Missing Entity Relationships
+
+- Our entity "has relations to other entities, which can't be found in the catalog".
+
+- Please add these entities and refresh catalog definition fron the repo.
+
+- Look at the examples in `~backstage/examples`.
+
+- Bonus task: add the API definition for the fastAPI app to the catalog too.
+---
+
 ## Create a new Component from Template
 
-Backstage provides the Scaffolder functionality which allows us to create software templates for engineers to get quickly started on new developemnt efforts.
+Backstage provides the Scaffolder functionality which allows us to create software templates for engineers to get quickly started on new development efforts.
 
 We'll look into creating our own templates later.
 
@@ -255,8 +285,17 @@ database:
       user: postgres
       password: stagecentral
 ```
-And - rerun Backstage:
+
+---
+
+## Another Environment Variable
+
+  If you're running Backstage with Node 20 or later, you'll need to pass the flag --no-node-snapshot to Node in order to use the templates feature. One way to do this is to specify the NODE_OPTIONS environment variable before starting Backstage: export NODE_OPTIONS=--no-node-snapshot
+
+.lab[
 ```bash
+echo export NODE_OPTIONS=--no-node-snapshot >> env.sh
+source env.sh
 yarn dev
 ```
 ]

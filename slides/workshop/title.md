@@ -6,7 +6,7 @@ class: title, in-person
 
 .footnote[
 *Presented by Anton Weiss*<br/>
-*StageCentral.*<br/>
+*PerfectScale.*<br/>
 *https://stagecentral.io*
 
 **Slides: @@SLIDES@@**

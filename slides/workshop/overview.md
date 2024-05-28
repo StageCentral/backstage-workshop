@@ -17,6 +17,15 @@ The main goal of the Internal Delivery Platform is to enable engineers to be mor
 
 ---
 
+class: pic
+
+![img alt=><](images/idp.png)
+
+[Diagram here](https://docs.google.com/presentation/d/1dWyGZjf50jN5ppfK28ZeHSYIFFi9ROpa4YCwtMs1Txo/edit?usp=sharing)
+
+
+---
+
 ## Components of an IDP
 
 A standard IDP consists of:
